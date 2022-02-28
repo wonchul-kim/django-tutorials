@@ -22,6 +22,11 @@ mkdir templates && cd templates
 * write `index.html` to show count integers
 
 
+### How to demonstrate 
+```
+python manage.py migrate 
+python manage.py runserver 
+```
 
 ### reference:
 * https://www.youtube.com/watch?v=R4-XRK6NqMA
