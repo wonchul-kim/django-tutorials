@@ -24,6 +24,7 @@ mkdir templates && cd templates
 
 ### How to demonstrate 
 ```
+pip install -r requirements.txt
 python manage.py migrate 
 python manage.py runserver 
 ```
