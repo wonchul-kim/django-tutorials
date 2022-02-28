@@ -110,6 +110,7 @@
 
 import json 
 from time import sleep 
+import threading 
 
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
@@ -118,6 +119,7 @@ class WSConsumer(WebsocketConsumer):
     def __init__(self):
         super().__init__()
         self._id = 0
+        self.e_stop = threading.Event()
 
     def connect(self):
         async_to_sync(self.channel_layer.group_add)('count_{}'.format(self._id), self.channel_name)
@@ -135,15 +137,23 @@ class WSConsumer(WebsocketConsumer):
             async_to_sync(self.channel_layer.group_discard)("count_{}".format(self._id), self.channel_name)
             self._id += 1
             async_to_sync(self.channel_layer.group_add)('count_{}'.format(self._id), self.channel_name)
+            self.e_stop.set()
             
     def send_data(self, data):
-        cnt = 0
-        for i in range(5):
-            self.send(json.dumps({'message': cnt}))
-            print(cnt)
+        def th():
+            cnt = 0
+            for i in range(5):
+                self.send(json.dumps({'message': cnt}))
+                print(cnt)
 
-            cnt += 1
-            sleep(1) # 1s
+                cnt += 1
+
+                if self.e_stop.is_set():
+                    self.e_stop.clear()
+                    break
+                sleep(1) # 1s
+        t = threading.Thread(target=th)
+        t.start()
 
 
 
