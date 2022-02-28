@@ -1,12 +1,22 @@
 import React from "react";
 import "./App.css";
 
-class App extends React.Component {
+interface IState {
+  message: string;
+  data: number;
+}
+
+class App extends React.Component<{}, IState> {
   ws: any;
 
+  state = {
+    message: "",
+    data: 0,
+  }
+
   componentDidMount() {
-    this.ws = new WebSocket("ws://localhost:8000/ws/integers/");  // 아까 서버에서 1234 port로 했으니 이런식으로
-    this.ws.onopen = () => {   // 연결!
+    this.ws = new WebSocket("ws://localhost:8000/ws/integers/");
+    this.ws.onopen = () => {
       this.ws.send(JSON.stringify({
         "message": "Hello! from Client",
       }))
@@ -15,20 +25,38 @@ class App extends React.Component {
     this.ws.onmessage = (e: MessageEvent) => {
       var data = JSON.parse(e.data);
       console.log(data.message);
+      if (typeof data.message === 'string')
+        this.setState({
+          message: data.message
+        })
+      else if (typeof data.message === 'number')
+        this.setState({
+          data: data.message
+        })
     };
   }
 
-  sendMessage = () => {
+  startButton = () => {
+    console.log("startButton")
     this.ws.send(JSON.stringify({
-      "message": "hello this is client Message"
+      "message": "start"
     }))
- };
-
+  };
+  stopButton = () => {
+    console.log("stopButton")
+    this.ws.send(JSON.stringify({
+      "message": "stop"
+    }))
+  };
   render() {
     return (
       <div className="App">
+        <h1>
+          {this.state.data}
+        </h1>
         <header className="App-header">
-          <button onClick={this.sendMessage}>메세지 보내기</button>
+          <button onClick={this.startButton}>start</button>
+          <button onClick={this.stopButton}>stop</button>
         </header>
       </div>
     );
