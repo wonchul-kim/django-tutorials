@@ -25,6 +25,8 @@ mkdir templates && cd templates
 ### How to demonstrate 
 ```
 python manage.py migrate 
+celery -A realtime_broadcasting beat -l INFO
+celery -A realtime_broadcasting worker -l INFO
 python manage.py runserver 
 ```
 
