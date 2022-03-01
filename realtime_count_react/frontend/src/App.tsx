@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 
 interface IState {
-  message: string;
+  info: string;
   data: number;
 }
 
@@ -10,7 +10,7 @@ class App extends React.Component<{}, IState> {
   ws: any;
 
   state = {
-    message: "",
+    info: "",
     data: 0,
   }
 
@@ -24,12 +24,12 @@ class App extends React.Component<{}, IState> {
 
     this.ws.onmessage = (e: MessageEvent) => {
       var data = JSON.parse(e.data);
-      console.log(data.message);
-      if (typeof data.message === 'string')
+      console.log(data);
+      if (data.type == "INFO")
         this.setState({
-          message: data.message
+          info: data.message
         })
-      else if (typeof data.message === 'number')
+      else if (data.type == "TRAIN")
         this.setState({
           data: data.message
         })
@@ -52,7 +52,7 @@ class App extends React.Component<{}, IState> {
     return (
       <div className="App">
         <h1>
-          {this.state.data}
+        {this.state.data}
         </h1>
         <header className="App-header">
           <button onClick={this.startButton}>start</button>
